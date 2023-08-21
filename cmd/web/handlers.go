@@ -10,14 +10,15 @@ import (
 
 // Handlers
 func home(w http.ResponseWriter, r *http.Request) {
-	// Do not allow all paths to default to "/"
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
 	}
 
+	// Include the navigation partial in the template files.
 	files := []string{
-		"./ui/html/base.tmpl", // base template must appear first
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
 		"./ui/html/pages/home.html",
 	}
 
