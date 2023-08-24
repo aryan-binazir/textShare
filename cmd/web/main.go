@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/aryan-binazir/textShare/internal/models"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
+	errorLog     *log.Logger
+	infoLog      *log.Logger
+	textSnippets *models.TextSnippetModel
 }
 
 // Routes
@@ -33,8 +35,9 @@ func main() {
 	defer db.Close()
 
 	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
+		errorLog:     errorLog,
+		infoLog:      infoLog,
+		textSnippets: &models.TextSnippetModel{DB: db},
 	}
 
 	srv := &http.Server{
