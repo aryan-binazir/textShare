@@ -51,5 +51,31 @@ func (m *TextSnippetModel) Get(id int) (*TextSnippet, error) {
 }
 
 func (m *TextSnippetModel) Latest() ([]*TextSnippet, error) {
-	return nil, nil
+	sqlStatement := `SELECT id, title, content, created, expires FROM snippets
+    WHERE expires > UTC_TIMESTAMP() ORDER BY id DESC LIMIT 10`
+
+	rows, err := m.DB.Query(sqlStatement)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	textSnippets := []*TextSnippet{}
+
+	for rows.Next() {
+		t := &TextSnippet{}
+
+		err = rows.Scan(&t.ID, &t.Title, &t.Content, &t.Created, &t.Expires)
+		if err != nil {
+			return nil, err
+		}
+
+		textSnippets = append(textSnippets, t)
+
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return textSnippets, nil
 }
