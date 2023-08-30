@@ -36,9 +36,14 @@ func (m *TextSnippetModel) Insert(title string, content string, expires int) (in
 }
 
 func (m *TextSnippetModel) Get(id int) (*TextSnippet, error) {
+	sqlStatement := `SELECT id, title, content, created, expires FROM snippets
+    WHERE expires > UTC_TIMESTAMP() AND id = ?`
+
+	row := m.DB.QueryRow(sqlStatement, id)
+
 	s := &TextSnippet{}
 
-	err := m.DB.QueryRow("SELECT ...", id).Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNoRecord
